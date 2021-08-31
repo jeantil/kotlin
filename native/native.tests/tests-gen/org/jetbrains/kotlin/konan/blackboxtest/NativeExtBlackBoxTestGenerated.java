@@ -7731,12 +7731,6 @@ public class NativeExtBlackBoxTestGenerated extends AbstractNativeBlackBoxTest {
             }
 
             @Test
-            @TestMetadata("kt49645.kt")
-            public void testKt49645() throws Exception {
-                runTest("compiler/testData/codegen/box/coroutines/kt49645.kt");
-            }
-
-            @Test
             @TestMetadata("lastExpressionIsLoop.kt")
             public void testLastExpressionIsLoop() throws Exception {
                 runTest("compiler/testData/codegen/box/coroutines/lastExpressionIsLoop.kt");
@@ -12547,6 +12541,12 @@ public class NativeExtBlackBoxTestGenerated extends AbstractNativeBlackBoxTest {
             @TestMetadata("genericNull.kt")
             public void testGenericNull() throws Exception {
                 runTest("compiler/testData/codegen/box/elvis/genericNull.kt");
+            }
+
+            @Test
+            @TestMetadata("kt24209.kt")
+            public void testKt24209() throws Exception {
+                runTest("compiler/testData/codegen/box/elvis/kt24209.kt");
             }
 
             @Test
@@ -30359,6 +30359,12 @@ public class NativeExtBlackBoxTestGenerated extends AbstractNativeBlackBoxTest {
             }
 
             @Test
+            @TestMetadata("kt47279.kt")
+            public void testKt47279() throws Exception {
+                runTest("compiler/testData/codegen/box/regressions/kt47279.kt");
+            }
+
+            @Test
             @TestMetadata("kt5056.kt")
             public void testKt5056() throws Exception {
                 runTest("compiler/testData/codegen/box/regressions/kt5056.kt");
@@ -35904,6 +35910,12 @@ public class NativeExtBlackBoxTestGenerated extends AbstractNativeBlackBoxTest {
             }
 
             @Test
+            @TestMetadata("kt48498.kt")
+            public void testKt48498() throws Exception {
+                runTest("compiler/testData/codegen/boxInline/delegatedProperty/kt48498.kt");
+            }
+
+            @Test
             @TestMetadata("local.kt")
             public void testLocal() throws Exception {
                 runTest("compiler/testData/codegen/boxInline/delegatedProperty/local.kt");
@@ -36317,6 +36329,12 @@ public class NativeExtBlackBoxTestGenerated extends AbstractNativeBlackBoxTest {
             @TestMetadata("innerInlineFunCapturesOuterWithInlineClass.kt")
             public void testInnerInlineFunCapturesOuterWithInlineClass() throws Exception {
                 runTest("compiler/testData/codegen/boxInline/innerClasses/innerInlineFunCapturesOuterWithInlineClass.kt");
+            }
+
+            @Test
+            @TestMetadata("kt12126.kt")
+            public void testKt12126() throws Exception {
+                runTest("compiler/testData/codegen/boxInline/innerClasses/kt12126.kt");
             }
         }
 

@@ -12355,6 +12355,11 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
     @TestDataPath("$PROJECT_ROOT")
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Elvis extends AbstractLightAnalysisModeTest {
+        @TestMetadata("kt24209.kt")
+        public void ignoreKt24209() throws Exception {
+            runTest("compiler/testData/codegen/box/elvis/kt24209.kt");
+        }
+
         private void runTest(String testDataFilePath) throws Exception {
             KotlinTestUtils.runTest(this::doTest, TargetBackend.JVM, testDataFilePath);
         }
@@ -21616,6 +21621,11 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
     @TestDataPath("$PROJECT_ROOT")
     @RunWith(JUnit3RunnerWithInners.class)
     public static class JvmField extends AbstractLightAnalysisModeTest {
+        @TestMetadata("kt12189_noClashOnDifferentCase.kt")
+        public void ignoreKt12189_noClashOnDifferentCase() throws Exception {
+            runTest("compiler/testData/codegen/box/jvmField/kt12189_noClashOnDifferentCase.kt");
+        }
+
         private void runTest(String testDataFilePath) throws Exception {
             KotlinTestUtils.runTest(this::doTest, TargetBackend.JVM, testDataFilePath);
         }
@@ -24796,6 +24806,11 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
     @TestDataPath("$PROJECT_ROOT")
     @RunWith(JUnit3RunnerWithInners.class)
     public static class ParametersMetadata extends AbstractLightAnalysisModeTest {
+        @TestMetadata("jvmOverloads.kt")
+        public void ignoreJvmOverloads() throws Exception {
+            runTest("compiler/testData/codegen/box/parametersMetadata/jvmOverloads.kt");
+        }
+
         private void runTest(String testDataFilePath) throws Exception {
             KotlinTestUtils.runTest(this::doTest, TargetBackend.JVM, testDataFilePath);
         }
@@ -32020,6 +32035,11 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
         @TestMetadata("kt44993.kt")
         public void testKt44993() throws Exception {
             runTest("compiler/testData/codegen/box/regressions/kt44993.kt");
+        }
+
+        @TestMetadata("kt47279.kt")
+        public void testKt47279() throws Exception {
+            runTest("compiler/testData/codegen/box/regressions/kt47279.kt");
         }
 
         @TestMetadata("kt5056.kt")
