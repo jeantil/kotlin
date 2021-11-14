@@ -1112,17 +1112,12 @@ class DeclarationsConverter(
                     isLateInit = modifiers.hasLateinit()
                 }
 
-                val receiver = delegateExpression?.let {
-                    expressionConverter.getAsFirExpression<FirExpression>(it, "Incorrect delegate expression")
-                }
-
                 generateAccessorsByDelegate(
                     delegateBuilder,
                     baseModuleData,
                     classWrapper?.classBuilder?.ownerRegularOrAnonymousObjectSymbol,
                     classWrapper?.classBuilder?.ownerRegularClassTypeParametersCount,
                     isExtension = false,
-                    receiver = receiver,
                     context = context
                 )
             } else {
@@ -1191,9 +1186,6 @@ class DeclarationsConverter(
                         isExternal = modifiers.hasExternal()
                     }
 
-                    val receiver = delegateExpression?.let {
-                        expressionConverter.getAsFirExpression<FirExpression>(it, "Should have delegate")
-                    }
                     generateAccessorsByDelegate(
                         delegateBuilder,
                         baseModuleData,
@@ -1201,7 +1193,6 @@ class DeclarationsConverter(
                         classWrapper?.classBuilder?.ownerRegularClassTypeParametersCount,
                         context,
                         isExtension = receiverType != null,
-                        receiver = receiver
                     )
                 }
             }
