@@ -5,20 +5,19 @@
 
 package org.jetbrains.kotlin.ir.backend.js.lower
 
-import org.jetbrains.kotlin.ir.IrBuiltIns
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.JsLoweredDeclarationOrigin
 import org.jetbrains.kotlin.ir.backend.js.utils.eraseGenerics
 import org.jetbrains.kotlin.ir.backend.js.utils.hasStableJsName
+import org.jetbrains.kotlin.ir.backend.js.utils.jsFunctionSignature
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.render
-import org.jetbrains.kotlin.name.Name
 
 class JsBridgesConstruction(context: JsIrBackendContext) : BridgesConstruction<JsIrBackendContext>(context) {
     override fun getFunctionSignature(function: IrSimpleFunction): JsSignature =
-        function.jsSignature(context.irBuiltIns)
+        function.jsSignature(context)
 
     override fun getBridgeOrigin(bridge: IrSimpleFunction): IrDeclarationOrigin =
         if (bridge.hasStableJsName(context))
@@ -28,7 +27,7 @@ class JsBridgesConstruction(context: JsIrBackendContext) : BridgesConstruction<J
 }
 
 data class JsSignature(
-    val name: Name,
+    val name: String,
     val extensionReceiverType: IrType?,
     val valueParametersType: List<IrType>,
 ) {
@@ -39,9 +38,9 @@ data class JsSignature(
     }
 }
 
-fun IrSimpleFunction.jsSignature(irBuiltIns: IrBuiltIns): JsSignature =
+fun IrSimpleFunction.jsSignature(context: JsIrBackendContext): JsSignature =
     JsSignature(
-        name,
-        extensionReceiverParameter?.type?.eraseGenerics(irBuiltIns),
-        valueParameters.map { it.type.eraseGenerics(irBuiltIns) },
+        jsFunctionSignature(this, context),
+        extensionReceiverParameter?.type?.eraseGenerics(context.irBuiltIns),
+        valueParameters.map { it.type.eraseGenerics(context.irBuiltIns) },
     )
