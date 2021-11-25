@@ -109,7 +109,7 @@ fun NameTable<IrDeclaration>.dump(): String =
 
 private const val RESERVED_MEMBER_NAME_SUFFIX = "_k$"
 
-fun jsFunctionSignature(declaration: IrFunction, context: JsIrBackendContext?): String {
+fun jsFunctionSignature(declaration: IrFunction, context: JsIrBackendContext): String {
     require(!declaration.isStaticMethodOfClass)
     require(declaration.dispatchReceiverParameter != null)
 
@@ -132,10 +132,10 @@ fun jsFunctionSignature(declaration: IrFunction, context: JsIrBackendContext?): 
         joinTo(nameBuilder, "") { "_${it.name.asString()}" }
     }
     declaration.extensionReceiverParameter?.let {
-        nameBuilder.append("_r$${it.type.asString()}")
+        nameBuilder.append("_r$${it.type.eraseGenerics(context.irBuiltIns).asString()}")
     }
     declaration.valueParameters.ifNotEmpty {
-        joinTo(nameBuilder, "") { "_${it.type.asString()}" }
+        joinTo(nameBuilder, "") { "_${it.type.eraseGenerics(context.irBuiltIns).asString()}" }
     }
     declaration.returnType.let {
         // Return type is only used in signature for inline class and Unit types because

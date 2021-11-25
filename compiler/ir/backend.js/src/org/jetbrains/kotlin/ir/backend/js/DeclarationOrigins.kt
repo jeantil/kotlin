@@ -16,4 +16,5 @@ object JsLoweredDeclarationOrigin : IrDeclarationOrigin {
     object OBJECT_GET_INSTANCE_FUNCTION : IrDeclarationOriginImpl("OBJECT_GET_INSTANCE_FUNCTION")
     object JS_SHADOWED_EXPORT : IrDeclarationOriginImpl("JS_SHADOWED_EXPORT")
     object ENUM_GET_INSTANCE_FUNCTION : IrDeclarationOriginImpl("ENUM_GET_INSTANCE_FUNCTION")
+    object JS_BRIDGED_FUNCTION : IrDeclarationOriginImpl("JS_BRIDGED_FUNCTION")
 }

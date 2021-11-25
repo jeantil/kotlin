@@ -36,6 +36,7 @@ fun IrFunction.hasStableJsName(context: JsIrBackendContext?): Boolean {
     }
 
     if (
+        origin == JsLoweredDeclarationOrigin.JS_BRIDGED_FUNCTION ||
         origin == JsLoweredDeclarationOrigin.JS_SHADOWED_EXPORT ||
         origin == IrDeclarationOrigin.FUNCTION_FOR_DEFAULT_PARAMETER ||
         origin == JsLoweredDeclarationOrigin.BRIDGE_WITHOUT_STABLE_NAME

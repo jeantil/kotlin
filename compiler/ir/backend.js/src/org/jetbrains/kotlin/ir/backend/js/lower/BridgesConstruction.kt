@@ -137,7 +137,7 @@ abstract class BridgesConstruction<T : JsCommonBackendContext>(val context: T) :
             overriddenSymbols += bridge.symbol
         }
 
-        function.origin = JsLoweredDeclarationOrigin.JS_SHADOWED_EXPORT
+        function.origin = JsLoweredDeclarationOrigin.JS_BRIDGED_FUNCTION
 
         irFunction.body = context.irFactory.createBlockBody(UNDEFINED_OFFSET, UNDEFINED_OFFSET) {
             statements += context.createIrBuilder(irFunction.symbol).irBlockBody(irFunction) {
