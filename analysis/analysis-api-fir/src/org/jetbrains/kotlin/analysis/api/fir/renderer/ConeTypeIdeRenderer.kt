@@ -13,7 +13,6 @@ import org.jetbrains.kotlin.fir.containingClassForLocal
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.declarations.utils.isInner
 import org.jetbrains.kotlin.fir.declarations.utils.isLocal
-import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.renderWithType
 import org.jetbrains.kotlin.fir.resolve.diagnostics.ConeUnresolvedError
 import org.jetbrains.kotlin.fir.resolve.toFirRegularClass
@@ -22,7 +21,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.LookupTagInternals
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.renderer.render
 import org.jetbrains.kotlin.utils.addToStdlib.applyIf
 
@@ -86,7 +84,7 @@ internal class ConeTypeIdeRenderer(
                 append(renderType(type.original))
                 append("!!")
             }
-            is ConeStubTypeForBuilderInference -> {
+            is ConeStubTypeForChainInference -> {
                 renderAnnotationList(annotations)
                 append(type.constructor.variable.typeConstructor.debugName)
             }
