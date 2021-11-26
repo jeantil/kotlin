@@ -230,8 +230,10 @@ class ConstraintSystemCompleter(private val components: BodyResolveComponents, p
                 fixVariable(asConstraintSystemCompletionContext(), topLevelType, variableWithConstraints, postponedArguments)
                 return true
             } else if (context.inferenceSession.isSyntheticTypeVariable(variableWithConstraints.typeVariable)) {
-                val variable = variableWithConstraints.typeVariable as ConeTypeVariable
-                context.inferenceSession.fixSyntheticTypeVariableWithNotEnoughInformation(variable, asConstraintSystemCompletionContext())
+                context.inferenceSession.fixSyntheticTypeVariableWithNotEnoughInformation(
+                    variableWithConstraints.typeVariable as ConeTypeVariable,
+                    asConstraintSystemCompletionContext()
+                )
                 return true
             } else {
                 processVariableWhenNotEnoughInformation(this, variableWithConstraints, topLevelAtoms)
