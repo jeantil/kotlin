@@ -680,9 +680,9 @@ class Fir2IrDeclarationStorage(
                 if (irParent != null) {
                     parent = irParent
                 }
-                if (correspondingProperty is Fir2IrLazyProperty && !isFakeOverride && thisReceiverOwner != null) {
+                if (correspondingProperty is Fir2IrLazyProperty && correspondingProperty.containingClass != null && !isFakeOverride && thisReceiverOwner != null) {
                     this.overriddenSymbols = correspondingProperty.fir.generateOverriddenAccessorSymbols(
-                        correspondingProperty.containingClass, !isSetter, session, scopeSession, declarationStorage, fakeOverrideGenerator
+                        correspondingProperty.containingClass!!, !isSetter, session, scopeSession, declarationStorage, fakeOverrideGenerator
                     )
                 }
             }
@@ -1156,7 +1156,7 @@ class Fir2IrDeclarationStorage(
                                             firFunctionSymbol.originalForSubstitutionOverride?.dispatchReceiverClassOrNull()
                                 Fir2IrLazySimpleFunction(
                                     components, startOffset, endOffset, declarationOrigin,
-                                    fir, lazyParent.fir, symbol, isFakeOverride
+                                    fir, (lazyParent as? Fir2IrLazyClass)?.fir, symbol, isFakeOverride
                                 ).apply {
                                     this.parent = lazyParent
                                 }
@@ -1210,7 +1210,7 @@ class Fir2IrDeclarationStorage(
                                     firPropertySymbol.dispatchReceiverClassOrNull() !=
                                     firPropertySymbol.originalForSubstitutionOverride?.dispatchReceiverClassOrNull()
                         Fir2IrLazyProperty(
-                            components, startOffset, endOffset, declarationOrigin, fir, lazyParent.fir, symbol, isFakeOverride
+                            components, startOffset, endOffset, declarationOrigin, fir, (lazyParent as? Fir2IrLazyClass)?.fir, symbol, isFakeOverride
                         ).apply {
                             this.parent = lazyParent
                         }
@@ -1277,7 +1277,7 @@ class Fir2IrDeclarationStorage(
         dispatchReceiverLookupTag: ConeClassLikeLookupTag?,
         getCachedIrDeclaration: (firDeclaration: F, dispatchReceiverLookupTag: ConeClassLikeLookupTag?, () -> IdSignature?) -> I?,
         createIrDeclaration: (parent: IrDeclarationParent?, origin: IrDeclarationOrigin) -> I,
-        createIrLazyDeclaration: (signature: IdSignature, lazyOwner: Fir2IrLazyClass, origin: IrDeclarationOrigin) -> I,
+        createIrLazyDeclaration: (signature: IdSignature, lazyOwner: IrDeclarationParent, origin: IrDeclarationOrigin) -> I,
     ): IrSymbol {
         val fir = firSymbol.fir as F
         val irParent by lazy { findIrParent(fir) }
@@ -1296,6 +1296,11 @@ class Fir2IrDeclarationStorage(
                     assert(parentOrigin != IrDeclarationOrigin.DEFINED) {
                         "Should not have reference to public API uncached property from source code"
                     }
+                    signature?.let {
+                        return createIrLazyDeclaration(it, parent, declarationOrigin).symbol
+                    }
+                }
+                is IrExternalPackageFragment -> {
                     signature?.let {
                         return createIrLazyDeclaration(it, parent, declarationOrigin).symbol
                     }
