@@ -32,11 +32,18 @@ internal class VariableManager(val functionGenerationContext: FunctionGeneration
         override fun toString() = (if (refSlot) "refslot" else "slot") + " for ${address}"
     }
 
-    inner class ParameterRecord(val address: LLVMValueRef, val refSlot: Boolean) : Record {
-        override fun load() : LLVMValueRef = functionGenerationContext.loadSlot(address, false)
+    inner class MappedToStackParameterRecord(val address: LLVMValueRef, val refSlot: Boolean) : Record {
+        override fun load(): LLVMValueRef = functionGenerationContext.loadSlot(address, false)
         override fun store(value: LLVMValueRef) = functionGenerationContext.store(value, address)
         override fun address() : LLVMValueRef = this.address
         override fun toString() = (if (refSlot) "refslot" else "slot") + " for ${address}"
+    }
+
+    inner class ParameterRecord(val value: LLVMValueRef, val refSlot: Boolean) : Record {
+        override fun load(): LLVMValueRef = value
+        override fun store(value: LLVMValueRef) = throw UnsupportedOperationException("Store instruction isn't supported for unmapped to stack parameter")
+        override fun address() : LLVMValueRef = throw UnsupportedOperationException("Getting address isn't supported for unmapped to stack parameter")
+        override fun toString() = (if (refSlot) "refslot" else "slot") + " for parameter ${value}"
     }
 
     class ValueRecord(val value: LLVMValueRef, val name: Name) : Record {
@@ -85,16 +92,19 @@ internal class VariableManager(val functionGenerationContext: FunctionGeneration
     }
 
     internal var skipSlots = 0
-    internal fun createParameter(valueDeclaration: IrValueDeclaration, variableLocation: VariableDebugLocation?) : Int {
+    internal fun createParameter(valueDeclaration: IrValueDeclaration, variableLocation: VariableDebugLocation?,
+                                 originalSlot: LLVMValueRef?) : Int {
         assert(!contextVariablesToIndex.contains(valueDeclaration))
         val index = variables.size
+
         val type = functionGenerationContext.getLLVMType(valueDeclaration.type)
-        val slot = functionGenerationContext.alloca(
-                type, "p-${valueDeclaration.name.asString()}", variableLocation)
         val isObject = functionGenerationContext.isObjectType(type)
-        variables.add(ParameterRecord(slot, isObject))
+
+        val record = originalSlot?.let { ParameterRecord(it, isObject) } ?: MappedToStackParameterRecord(functionGenerationContext.alloca(
+                type, "p-${valueDeclaration.name.asString()}", variableLocation), isObject)
+        variables.add(record)
         contextVariablesToIndex[valueDeclaration] = index
-        if (isObject)
+        if (originalSlot == null && isObject)
             skipSlots++
         return index
     }
