@@ -90,7 +90,7 @@ fun Task.dependsOnKotlinGradlePluginPublish() {
 }
 
 enum class JUnitMode {
-    JUnit4, JUnit5, Mix
+    JUnit4, JUnit5
 }
 
 /**
