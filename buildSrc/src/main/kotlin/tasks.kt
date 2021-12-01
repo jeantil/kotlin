@@ -111,6 +111,8 @@ fun Project.projectTest(
     }
     return getOrCreateTask<Test>(taskName) {
         doFirst {
+            if (jUnitMode == JUnitMode.JUnit5) return@doFirst
+
             val commandLineIncludePatterns = (filter as? DefaultTestFilter)?.commandLineIncludePatterns ?: mutableSetOf()
             val patterns = filter.includePatterns + commandLineIncludePatterns
             if (patterns.isEmpty() || patterns.any { '*' in it }) return@doFirst
@@ -141,19 +143,6 @@ fun Project.projectTest(
                     }
                 }
 
-                val parentNames = if (jUnitMode != JUnitMode.JUnit4) {
-                    /*
-                     * If we run test from inner test class with junit 5 we need
-                     *   to include all containing classes of our class
-                     */
-                    val nestedNames = classFileNameWithoutExtension.split("$")
-                    mutableListOf(nestedNames.first()).also {
-                        for (s in nestedNames.subList(1, nestedNames.size)) {
-                            it += "${it.last()}\$$s"
-                        }
-                    }
-                } else emptyList()
-
                 include { treeElement ->
                     val path = treeElement.path
                     if (treeElement.isDirectory) {
@@ -161,11 +150,8 @@ fun Project.projectTest(
                     } else {
                         if (path == classFileName) return@include true
                         if (!path.endsWith(".class")) return@include false
-                        when(jUnitMode) {
-                            JUnitMode.JUnit5 -> parentNames.any { path.startsWith(it) }
-                            JUnitMode.JUnit4 -> path.startsWith("$classFileNameWithoutExtension$")
-                            JUnitMode.Mix -> parentNames.any { path.startsWith(it) } || path.startsWith("$classFileNameWithoutExtension$")
-                        }
+
+                        path.startsWith("$classFileNameWithoutExtension$")
                     }
                 }
             }
