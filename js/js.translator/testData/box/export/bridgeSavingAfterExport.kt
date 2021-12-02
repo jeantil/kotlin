@@ -23,14 +23,6 @@ function box() {
     var b = new this["bridge_saving_after_export"].B()
     var bFoo = b.foo("ok")
     if (bFoo != "ok") return "fail 2"
-    var bResult;
-    try {
-        bFoo.foo(5)
-    } catch {
-        bResult = "ok"
-    }
-    if (bResult != "ok") return "fail 3"
-
 
     return "OK"
 }
