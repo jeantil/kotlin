@@ -11,6 +11,11 @@ plugins {
 
 description = "Kotlin-test integration tests for JS IR"
 
+node {
+    version = "16.13.0"
+    download = true
+}
+
 val jsMainSources by task<Sync> {
     from("$rootDir/libraries/kotlin.test/js/it/src")
     into("$buildDir/jsMainSources")
