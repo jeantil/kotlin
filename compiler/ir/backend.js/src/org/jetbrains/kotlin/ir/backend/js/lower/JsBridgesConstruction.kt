@@ -9,10 +9,12 @@ import org.jetbrains.kotlin.ir.IrBuiltIns
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
 import org.jetbrains.kotlin.ir.backend.js.JsLoweredDeclarationOrigin
 import org.jetbrains.kotlin.ir.backend.js.utils.eraseGenerics
+import org.jetbrains.kotlin.ir.backend.js.utils.getJsInlinedClass
 import org.jetbrains.kotlin.ir.backend.js.utils.hasStableJsName
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.types.isUnit
 import org.jetbrains.kotlin.ir.util.render
 import org.jetbrains.kotlin.name.Name
 
@@ -31,11 +33,12 @@ data class JsSignature(
     val name: Name,
     val extensionReceiverType: IrType?,
     val valueParametersType: List<IrType>,
+    val returnType: IrType?,
 ) {
     override fun toString(): String {
         val er = extensionReceiverType?.let { "(er: ${it.render()}) " } ?: ""
         val parameters = valueParametersType.joinToString(", ") { it.render() }
-        return "[$er$name($parameters)]"
+        return "[$er$name($parameters) -> ${returnType?.let { " -> ${it.render()}" } ?: ""}]"
     }
 }
 
@@ -44,4 +47,7 @@ fun IrSimpleFunction.jsSignature(irBuiltIns: IrBuiltIns): JsSignature =
         name,
         extensionReceiverParameter?.type?.eraseGenerics(irBuiltIns),
         valueParameters.map { it.type.eraseGenerics(irBuiltIns) },
+        returnType.takeIf {
+            it.getJsInlinedClass() != null || it.isUnit()
+        }
     )
