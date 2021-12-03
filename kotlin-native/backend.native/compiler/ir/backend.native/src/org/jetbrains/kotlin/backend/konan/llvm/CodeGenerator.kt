@@ -1518,8 +1518,10 @@ internal abstract class FunctionGenerationContext(
             if (switchToRunnable) {
                 switchThreadState(Runnable)
             }
-            if (needSlots || needCleanupLandingpadAndLeaveFrame || setCurrentFrameIsCalled) {
+            if (needSlots || needCleanupLandingpadAndLeaveFrame) {
                 call(context.llvm.enterFrameFunction, listOf(slotsPhi!!, Int32(vars.skipSlots).llvm, Int32(slotCount).llvm))
+            } else {
+                check(!setCurrentFrameIsCalled)
             }
             if (context.memoryModel == MemoryModel.EXPERIMENTAL && !forbidRuntime) {
                 call(context.llvm.Kotlin_mm_safePointFunctionPrologue, emptyList())
@@ -1711,7 +1713,7 @@ internal abstract class FunctionGenerationContext(
         }
 
     private fun releaseVars() {
-        if (needCleanupLandingpadAndLeaveFrame || needSlots || setCurrentFrameIsCalled) {
+        if (needCleanupLandingpadAndLeaveFrame || needSlots) {
             check(!forbidRuntime) { "Attempt to leave a frame where runtime usage is forbidden" }
             call(context.llvm.leaveFrameFunction,
                     listOf(slotsPhi!!, Int32(vars.skipSlots).llvm, Int32(slotCount).llvm))

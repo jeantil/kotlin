@@ -93,18 +93,23 @@ internal class VariableManager(val functionGenerationContext: FunctionGeneration
 
     internal var skipSlots = 0
     internal fun createParameter(valueDeclaration: IrValueDeclaration, variableLocation: VariableDebugLocation?,
-                                 originalSlot: LLVMValueRef?) : Int {
+                                 initialValueIfNotStackAllocated: LLVMValueRef?): Int {
         assert(!contextVariablesToIndex.contains(valueDeclaration))
         val index = variables.size
 
         val type = functionGenerationContext.getLLVMType(valueDeclaration.type)
         val isObject = functionGenerationContext.isObjectType(type)
 
-        val record = originalSlot?.let { ParameterRecord(it, isObject) } ?: MappedToStackParameterRecord(functionGenerationContext.alloca(
-                type, "p-${valueDeclaration.name.asString()}", variableLocation), isObject)
+        val record = if (initialValueIfNotStackAllocated != null)
+            ParameterRecord(initialValueIfNotStackAllocated, isObject)
+        else
+            MappedToStackParameterRecord(
+                    functionGenerationContext.alloca(type, "p-${valueDeclaration.name.asString()}", variableLocation),
+                    isObject
+            )
         variables.add(record)
         contextVariablesToIndex[valueDeclaration] = index
-        if (originalSlot == null && isObject)
+        if (initialValueIfNotStackAllocated == null && isObject)
             skipSlots++
         return index
     }
