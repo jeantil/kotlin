@@ -2053,12 +2053,6 @@ public class BoxJsTestGenerated extends AbstractBoxJsTest {
         }
 
         @Test
-        @TestMetadata("bridgeSavingAfterExport.kt")
-        public void testBridgeSavingAfterExport() throws Exception {
-            runTest("js/js.translator/testData/box/export/bridgeSavingAfterExport.kt");
-        }
-
-        @Test
         @TestMetadata("defaultInlineClassConstructorParam.kt")
         public void testDefaultInlineClassConstructorParam() throws Exception {
             runTest("js/js.translator/testData/box/export/defaultInlineClassConstructorParam.kt");
