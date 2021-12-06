@@ -86,7 +86,7 @@ internal class GlobalSettings(
         private const val EXECUTION_TIMEOUT = "kotlin.internal.native.test.executionTimeout"
         private const val PROJECT_BUILD_DIR = "PROJECT_BUILD_DIR"
 
-        private val DEFAULT_EXECUTION_TIMEOUT get() = 10.seconds // Use no backing field to avoid null-initialized value.
+        private val DEFAULT_EXECUTION_TIMEOUT get() = 30.seconds // Use no backing field to avoid null-initialized value.
     }
 }
 
