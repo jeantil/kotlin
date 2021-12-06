@@ -18,6 +18,7 @@
 #include "ThreadRegistry.hpp"
 #include "ThreadSuspension.hpp"
 #include "GCState.hpp"
+#include "FinalizerProcessor.h"
 
 using namespace kotlin;
 
@@ -87,7 +88,7 @@ void gc::ConcurrentMarkAndSweep::ThreadData::ScheduleAndWaitFullGCWithFinalizers
 }
 
 void gc::ConcurrentMarkAndSweep::ThreadData::StopFinalizerThreadForTests() noexcept {
-    gc_.StopFinalizerThreadForTests();
+    gc_.finalizerProcessor_->StopFinalizerThreadForTests();
 }
 
 void gc::ConcurrentMarkAndSweep::ThreadData::OnOOM(size_t size) noexcept {
@@ -106,7 +107,7 @@ NO_EXTERNAL_CALLS_CHECK NO_INLINE void gc::ConcurrentMarkAndSweep::ThreadData::S
     threadData_.suspensionData().suspendIfRequested();
 }
 
-gc::ConcurrentMarkAndSweep::ConcurrentMarkAndSweep() noexcept  {
+gc::ConcurrentMarkAndSweep::ConcurrentMarkAndSweep() noexcept : finalizerProcessor_(std::make_unique<FinalizerProcessor>(state_)) {
     mm::GlobalData::Instance().gcScheduler().SetScheduleGC([this]() NO_EXTERNAL_CALLS_CHECK NO_INLINE {
         RuntimeLogDebug({kTagGC}, "Scheduling GC by thread %d", konan::currentThreadId());
         state_.schedule();
@@ -125,39 +126,13 @@ gc::ConcurrentMarkAndSweep::ConcurrentMarkAndSweep() noexcept  {
     });
 }
 
-void gc::ConcurrentMarkAndSweep::StartFinalizerThreadIfNone() noexcept {
-    if (finalizerThread_.joinable()) return;
-    finalizerThread_ = std::thread([this] {
-        Kotlin_initRuntimeIfNeeded();
-        while (true) {
-            auto finalizersEpoch = state_.waitFinalizersRequired();
-            if (finalizersEpoch == std::numeric_limits<int64_t>::max()) break;
-            std::unique_lock lock(finalizerQueueMutex_);
-            auto queue = std::move(finalizerQueue_);
-            lock.unlock();
-            if (queue.size() > 0) {
-                ThreadStateGuard guard(ThreadState::kRunnable);
-                queue.Finalize();
-            }
-            state_.finalized(finalizersEpoch);
-        }
-    });
-}
-
-void gc::ConcurrentMarkAndSweep::StopFinalizerThreadForTests() noexcept {
-    auto epoch = state_.waitCurrentFinished();
-    if (finalizerThread_.joinable()) {
-        state_.finish(std::numeric_limits<int64_t>::max());
-        finalizerThread_.join();
-        RuntimeAssert(finalizerQueue_.size() == 0, "Finalizer queue should be empty when killing finalizer thread");
-        state_.finish(epoch);
-        state_.finalized(epoch);
-    }
-}
 
 gc::ConcurrentMarkAndSweep::~ConcurrentMarkAndSweep() {
     state_.shutdown();
     gcThread_.join();
+}
+
+gc::FinalizerProcessor::~FinalizerProcessor() {
     if (finalizerThread_.joinable()) {
         finalizerThread_.join();
     }
@@ -229,14 +204,9 @@ bool gc::ConcurrentMarkAndSweep::PerformFullGC(int64_t epoch) noexcept {
     auto finalizersCount = finalizerQueue.size();
     auto collectedCount = objectsCountBefore - objectsCountAfter - finalizersCount;
 
-    if (finalizersCount) {
-        StartFinalizerThreadIfNone();
-        std::unique_lock guard(finalizerQueueMutex_);
-        finalizerQueue_.MergeWith(std::move(finalizerQueue));
-    }
-
+    finalizerProcessor_->ScheduleTasks(std::move(finalizerQueue));
     state_.finish(epoch);
-    if (!finalizerThread_.joinable()) {
+    if (!finalizerProcessor_->IsRunning()) {
         state_.finalized(epoch);
     }
 
@@ -248,3 +218,4 @@ bool gc::ConcurrentMarkAndSweep::PerformFullGC(int64_t epoch) noexcept {
     lastGCTimestampUs_ = timeResumeUs;
     return true;
 }
+

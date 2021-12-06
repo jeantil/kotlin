@@ -22,6 +22,8 @@ class ThreadData;
 
 namespace gc {
 
+class FinalizerProcessor;
+
 // Stop-the-world mark + concurrent sweep. The GC runs in a separate thread, finalizers run in another thread of their own.
 // TODO: Also make mark concurrent.
 class ConcurrentMarkAndSweep : private Pinned {
@@ -75,21 +77,17 @@ public:
 
     ConcurrentMarkAndSweep() noexcept;
     ~ConcurrentMarkAndSweep();
-    void StopFinalizerThreadForTests() noexcept;
 
 private:
     // Returns `true` if GC has happened, and `false` if not (because someone else has suspended the threads).
     bool PerformFullGC(int64_t epoch) noexcept;
-    void StartFinalizerThreadIfNone() noexcept;
     void RequestThreadsSuspension() noexcept;
     void ResumeThreads() noexcept;
 
     uint64_t lastGCTimestampUs_ = 0;
     GCStateHolder state_;
     std::thread gcThread_;
-    std::thread finalizerThread_;
-    mm::ObjectFactory<ConcurrentMarkAndSweep>::FinalizerQueue finalizerQueue_;
-    std::mutex finalizerQueueMutex_;
+    std::unique_ptr<FinalizerProcessor> finalizerProcessor_;
 };
 
 } // namespace gc
