@@ -24,7 +24,6 @@
 using namespace kotlin;
 
 // These tests can only work if `GC` is `SameThreadMarkAndSweep`.
-// TODO: Extracting GC into a separate module will help with this.
 
 namespace {
 

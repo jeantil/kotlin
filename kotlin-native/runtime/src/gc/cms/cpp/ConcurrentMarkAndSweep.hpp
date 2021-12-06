@@ -22,7 +22,8 @@ class ThreadData;
 
 namespace gc {
 
-// Stop-the-world Mark-and-Sweep that runs on mutator threads. Can support targets that do not have threads.
+// Stop-the-world mark + concurrent sweep. The GC runs in a separate thread, finalizers run in another thread of their own.
+// TODO: Also make mark concurrent.
 class ConcurrentMarkAndSweep : private Pinned {
 public:
 
