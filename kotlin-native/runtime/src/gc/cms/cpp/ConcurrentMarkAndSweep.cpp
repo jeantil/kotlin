@@ -171,7 +171,6 @@ bool gc::ConcurrentMarkAndSweep::PerformFullGC(int64_t epoch) noexcept {
     auto timeRootSetUs = konan::getTimeMicros();
     // Can be unsafe, because we've stopped the world.
 
-    KStdVector<ObjHeader*> graySet = collectRootSet();
     auto objectsCountBefore = mm::GlobalData::Instance().objectFactory().GetSizeUnsafe();
     RuntimeLogInfo(
             {kTagGC}, "Collected root set of size %zu in %" PRIu64 " microseconds", graySet.size(),
