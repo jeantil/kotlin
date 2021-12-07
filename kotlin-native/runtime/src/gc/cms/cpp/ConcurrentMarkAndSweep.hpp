@@ -87,7 +87,7 @@ private:
     uint64_t lastGCTimestampUs_ = 0;
     GCStateHolder state_;
     std::thread gcThread_;
-    std::unique_ptr<FinalizerProcessor> finalizerProcessor_;
+    KStdUniquePtr<FinalizerProcessor> finalizerProcessor_;
 };
 
 } // namespace gc

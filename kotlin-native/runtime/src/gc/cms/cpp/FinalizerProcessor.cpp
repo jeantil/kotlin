@@ -3,7 +3,7 @@
 * that can be found in the LICENSE file.
 */
 
-#include "FinalizerProcessor.h"
+#include "FinalizerProcessor.hpp"
 #include "ObjectFactory.hpp"
 #include "Runtime.h"
 
@@ -50,4 +50,10 @@ void kotlin::gc::FinalizerProcessor::ScheduleTasks(kotlin::mm::ObjectFactory<Con
 
 bool kotlin::gc::FinalizerProcessor::IsRunning() noexcept {
     return finalizerThread_.joinable();
+}
+
+kotlin::gc::FinalizerProcessor::~FinalizerProcessor() {
+    if (finalizerThread_.joinable()) {
+        finalizerThread_.join();
+    }
 }

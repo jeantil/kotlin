@@ -18,7 +18,7 @@
 #include "ThreadRegistry.hpp"
 #include "ThreadSuspension.hpp"
 #include "GCState.hpp"
-#include "FinalizerProcessor.h"
+#include "FinalizerProcessor.hpp"
 
 using namespace kotlin;
 
@@ -107,7 +107,7 @@ NO_EXTERNAL_CALLS_CHECK NO_INLINE void gc::ConcurrentMarkAndSweep::ThreadData::S
     threadData_.suspensionData().suspendIfRequested();
 }
 
-gc::ConcurrentMarkAndSweep::ConcurrentMarkAndSweep() noexcept : finalizerProcessor_(std::make_unique<FinalizerProcessor>(state_)) {
+gc::ConcurrentMarkAndSweep::ConcurrentMarkAndSweep() noexcept : finalizerProcessor_(make_unique<FinalizerProcessor>(state_)) {
     mm::GlobalData::Instance().gcScheduler().SetScheduleGC([this]() NO_EXTERNAL_CALLS_CHECK NO_INLINE {
         RuntimeLogDebug({kTagGC}, "Scheduling GC by thread %d", konan::currentThreadId());
         state_.schedule();
@@ -132,11 +132,6 @@ gc::ConcurrentMarkAndSweep::~ConcurrentMarkAndSweep() {
     gcThread_.join();
 }
 
-gc::FinalizerProcessor::~FinalizerProcessor() {
-    if (finalizerThread_.joinable()) {
-        finalizerThread_.join();
-    }
-}
 
 void gc::ConcurrentMarkAndSweep::RequestThreadsSuspension() noexcept {
     gNeedSafepointSlowpath = true;

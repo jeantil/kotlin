@@ -20,7 +20,7 @@
 #include "ObjectTestSupport.hpp"
 #include "TestSupport.hpp"
 #include "ThreadData.hpp"
-#include "FinalizerProcessor.h"
+#include "FinalizerProcessor.hpp"
 
 using namespace kotlin;
 
