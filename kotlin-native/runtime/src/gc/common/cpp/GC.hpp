@@ -43,8 +43,8 @@ public:
 
 KStdUniquePtr<GC> CreateGC() noexcept;
 
-void SafePointFunctionPrologue(gc::GC::ThreadData& threadData) noexcept;
-void SafePointLoopBody(gc::GC::ThreadData& threadData) noexcept;
+void SafePointFunctionPrologue(mm::ThreadData& threadData) noexcept;
+void SafePointLoopBody(mm::ThreadData& threadData) noexcept;
 
 } // namespace gc
 } // namespace kotlin

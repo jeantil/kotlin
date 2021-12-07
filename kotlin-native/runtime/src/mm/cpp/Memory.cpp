@@ -536,13 +536,13 @@ extern "C" void CheckGlobalsAccessible() {
 extern "C" RUNTIME_NOTHROW ALWAYS_INLINE void Kotlin_mm_safePointFunctionPrologue() {
     auto* threadData = mm::ThreadRegistry::Instance().CurrentThreadData();
     AssertThreadState(threadData, ThreadState::kRunnable);
-    gc::SafePointFunctionPrologue(threadData->gc());
+    gc::SafePointFunctionPrologue(*threadData);
 }
 
 extern "C" RUNTIME_NOTHROW ALWAYS_INLINE void Kotlin_mm_safePointWhileLoopBody() {
     auto* threadData = mm::ThreadRegistry::Instance().CurrentThreadData();
     AssertThreadState(threadData, ThreadState::kRunnable);
-    gc::SafePointLoopBody(threadData->gc());
+    gc::SafePointLoopBody(*threadData);
 }
 
 extern "C" ALWAYS_INLINE RUNTIME_NOTHROW void Kotlin_mm_switchThreadStateNative() {

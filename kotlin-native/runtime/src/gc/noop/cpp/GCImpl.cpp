@@ -73,9 +73,9 @@ KStdUniquePtr<gc::GC> gc::CreateGC() noexcept {
     return make_unique<GCImpl>();
 }
 
-void gc::SafePointFunctionPrologue(gc::GC::ThreadData& threadData) noexcept {}
+ALWAYS_INLINE void gc::SafePointFunctionPrologue(mm::ThreadData& threadData) noexcept {}
 
-void gc::SafePointLoopBody(gc::GC::ThreadData& threadData) noexcept {}
+ALWAYS_INLINE void gc::SafePointLoopBody(mm::ThreadData& threadData) noexcept {}
 
 gc::ObjectFactory<gc::NoOpGC>& gc::GetObjectFactory(gc::GC& gc) noexcept {
     auto& gcImpl = GCImpl::From(gc);

@@ -9,6 +9,7 @@
 #include "GCScheduler.hpp"
 #include "ObjectFactory.hpp"
 #include "SameThreadMarkAndSweep.hpp"
+#include "ThreadData.hpp"
 
 using namespace kotlin;
 
@@ -80,13 +81,13 @@ KStdUniquePtr<gc::GC> gc::CreateGC() noexcept {
     return make_unique<GCImpl>();
 }
 
-void gc::SafePointFunctionPrologue(gc::GC::ThreadData& threadData) noexcept {
-    auto& threadDataImpl = GCThreadDataImpl::From(threadData);
+ALWAYS_INLINE void gc::SafePointFunctionPrologue(mm::ThreadData& threadData) noexcept {
+    auto& threadDataImpl = GCThreadDataImpl::From(threadData.gc());
     threadDataImpl.gc().SafePointFunctionPrologue();
 }
 
-void gc::SafePointLoopBody(gc::GC::ThreadData& threadData) noexcept {
-    auto& threadDataImpl = GCThreadDataImpl::From(threadData);
+ALWAYS_INLINE void gc::SafePointLoopBody(mm::ThreadData& threadData) noexcept {
+    auto& threadDataImpl = GCThreadDataImpl::From(threadData.gc());
     threadDataImpl.gc().SafePointLoopBody();
 }
 
