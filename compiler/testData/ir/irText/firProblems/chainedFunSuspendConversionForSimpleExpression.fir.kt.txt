@@ -1,0 +1,29 @@
+fun interface SuspendRunnable {
+  abstract suspend fun invoke()
+
+}
+
+fun foo(s: SuspendRunnable) {
+}
+
+fun test(f: Function0<Unit>) {
+  foo(s = local suspend fun <anonymous>() {
+    return Unit
+  }
+ /*-> SuspendRunnable */)
+  foo(s = { // BLOCK
+    local suspend fun Function0<Unit>.suspendConversion() {
+      callee.invoke()
+    }
+
+    f::suspendConversion
+  } /*-> SuspendRunnable */)
+}
+
+fun box(): String {
+  test(f = local fun <anonymous>() {
+    "" /*~> Unit */
+  }
+)
+  return "OK"
+}

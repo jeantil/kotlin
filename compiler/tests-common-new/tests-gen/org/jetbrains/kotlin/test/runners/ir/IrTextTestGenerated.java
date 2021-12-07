@@ -2441,6 +2441,12 @@ public class IrTextTestGenerated extends AbstractIrTextTest {
         }
 
         @Test
+        @TestMetadata("chainedFunSuspendConversionForSimpleExpression.kt")
+        public void testChainedFunSuspendConversionForSimpleExpression() throws Exception {
+            runTest("compiler/testData/ir/irText/firProblems/chainedFunSuspendConversionForSimpleExpression.kt");
+        }
+
+        @Test
         @TestMetadata("ClashResolutionDescriptor.kt")
         public void testClashResolutionDescriptor() throws Exception {
             runTest("compiler/testData/ir/irText/firProblems/ClashResolutionDescriptor.kt");
