@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.analysis.api.components.*
 import org.jetbrains.kotlin.analysis.api.descriptors.components.*
 import org.jetbrains.kotlin.analysis.api.symbols.KtSymbolProvider
 import org.jetbrains.kotlin.analysis.api.tokens.ValidityToken
+import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 
@@ -43,6 +44,9 @@ class KtFe10AnalysisSession(val analysisContext: Fe10AnalysisContext) : KtAnalys
     override val importOptimizerImpl: KtImportOptimizer = KtFe10ImportOptimizer(this)
     override val jvmTypeMapperImpl: KtJvmTypeMapper = KtFe10JvmTypeMapper(this)
     override val symbolInfoProviderImpl: KtSymbolInfoProvider = KtFe10SymbolInfoProvider(this)
+
+    override val languageVersionSettings: LanguageVersionSettings
+        get() = analysisContext.languageVersionSettings
 
     override fun createContextDependentCopy(originalKtFile: KtFile, elementToReanalyze: KtElement): KtAnalysisSession {
         return KtFe10AnalysisSession(elementToReanalyze, token)

@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.analysis.api.symbols.KtSymbolProvider
 import org.jetbrains.kotlin.analysis.api.symbols.KtSymbolProviderMixIn
 import org.jetbrains.kotlin.analysis.api.symbols.pointers.KtSymbolPointer
 import org.jetbrains.kotlin.analysis.api.tokens.ValidityToken
+import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 
@@ -56,6 +57,7 @@ public abstract class KtAnalysisSession(final override val token: ValidityToken)
     KtTypeCreatorMixIn {
 
     override val analysisSession: KtAnalysisSession get() = this
+    public abstract val languageVersionSettings: LanguageVersionSettings
 
     public abstract fun createContextDependentCopy(originalKtFile: KtFile, elementToReanalyze: KtElement): KtAnalysisSession
 

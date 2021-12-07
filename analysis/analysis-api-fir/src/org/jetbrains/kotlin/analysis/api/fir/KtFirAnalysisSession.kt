@@ -18,7 +18,9 @@ import org.jetbrains.kotlin.analysis.api.fir.utils.threadLocal
 import org.jetbrains.kotlin.analysis.api.tokens.ValidityToken
 import org.jetbrains.kotlin.analysis.low.level.api.fir.api.FirModuleResolveState
 import org.jetbrains.kotlin.analysis.low.level.api.fir.api.LowLevelFirApiFacadeForResolveOnAir
+import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.languageVersionSettings
 import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.resolve.providers.FirSymbolProvider
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
@@ -117,6 +119,9 @@ private constructor(
     val rootModuleSession: FirSession get() = firResolveState.rootModuleSession
     val firSymbolProvider: FirSymbolProvider get() = rootModuleSession.symbolProvider
     val targetPlatform: TargetPlatform get() = rootModuleSession.moduleData.platform
+
+    override val languageVersionSettings: LanguageVersionSettings
+        get() = rootModuleSession.languageVersionSettings
 
     companion object {
         @InvalidWayOfUsingAnalysisSession

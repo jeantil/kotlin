@@ -23,6 +23,9 @@ import org.jetbrains.kotlin.asJava.builder.LightMemberOriginForDeclaration
 import org.jetbrains.kotlin.asJava.classes.*
 import org.jetbrains.kotlin.asJava.elements.KtLightField
 import org.jetbrains.kotlin.asJava.elements.KtLightMethod
+import org.jetbrains.kotlin.asJava.hasInterfaceDefaultImpls
+import org.jetbrains.kotlin.config.JvmAnalysisFlags
+import org.jetbrains.kotlin.config.JvmDefaultMode
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -389,7 +392,11 @@ internal fun FirLightClassBase.createInheritanceList(forExtendsList: Boolean, su
     return listBuilder
 }
 
-internal fun KtSymbolWithMembers.createInnerClasses(manager: PsiManager): List<FirLightClassBase> {
+internal fun KtSymbolWithMembers.createInnerClasses(
+    manager: PsiManager,
+    containingClass: FirLightClassBase,
+    classOrObject: KtClassOrObject?
+): List<FirLightClassBase> {
     val result = ArrayList<FirLightClassBase>()
 
     // workaround for ClassInnerStuffCache not supporting classes with null names, see KT-13927
@@ -402,10 +409,17 @@ internal fun KtSymbolWithMembers.createInnerClasses(manager: PsiManager): List<F
         }
     }
 
-    //TODO
-    //if (classOrObject.hasInterfaceDefaultImpls) {
-    //    result.add(KtLightClassForInterfaceDefaultImpls(classOrObject))
-    //}
+    val jvmDefaultMode =
+        manager.project.analyzeWithSymbolAsContext(this) {
+            analysisSession.languageVersionSettings.getFlag(JvmAnalysisFlags.jvmDefaultMode)
+        }
+
+    if (this is KtNamedClassOrObjectSymbol &&
+        classOrObject?.hasInterfaceDefaultImpls == true &&
+        jvmDefaultMode != JvmDefaultMode.ALL_INCOMPATIBLE
+    ) {
+        result.add(FirLightClassForInterfaceDefaultImpls(this, containingClass, manager))
+    }
     return result
 }
 
